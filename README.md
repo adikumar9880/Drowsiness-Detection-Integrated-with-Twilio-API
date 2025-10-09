@@ -160,8 +160,6 @@ The CNN model consists of:
 ![Alert System](output/closed1.jpg)
 *Red warning border and alarm activation when drowsiness is detected*
 
-### Training Progress
-*[Add screenshot of model training progress if you train your own model]*
 
 ## ⚙️ Configuration
 
