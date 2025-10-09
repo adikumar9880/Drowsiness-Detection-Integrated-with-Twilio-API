@@ -106,9 +106,8 @@ Drowsiness detection/
 │   ├── haarcascade_frontalface_alt.xml
 │   ├── haarcascade_lefteye_2splits.xml
 │   └── haarcascade_righteye_2splits.xml
-├── models/                    # Trained models
-│   ├── cnnCat2.h5            # Original model (legacy)
-│   └── cnncat2_new.h5        # Compatible model
+├── models/                    # Trained model
+│   └── cnncat2_new.h5        
 └── dd1/                      # Virtual environment
 ```
 
