@@ -216,18 +216,22 @@ The CNN model consists of:
 
 ### System Interface
 ![System Interface](output/open.jpg)
+
 *Main detection window showing face detection and status display*
 
 ### Drowsiness Detection in Action
 ![Drowsiness Detection](output/closed.jpg)
+
 *System detecting closed eyes with drowsiness score*
 
 ### Alert System
 ![Alert System](output/closed1.jpg)
+
 *Red warning border and alarm activation when drowsiness is detected*
 
 ### SMS Emergency Notifications
 ![SMS Emergency Alert](output/sms_alert.jpg)
+
 *SMS notification received on phone showing emergency alert*
 
 ## ⚙️ Configuration
