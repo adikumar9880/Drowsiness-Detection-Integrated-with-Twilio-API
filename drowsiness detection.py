@@ -18,10 +18,25 @@ import numpy as np
 from pygame import mixer
 import time
 from tensorflow.keras.models import load_model
+from twilio.rest import Client  # Import Twilio library for sending SMS
+import geocoder
+
+# Twilio configuration for emergency SMS alerts
+# SECURITY: Use environment variables or config file - never hardcode credentials!
+import os
+
+# Try to load from environment variables first, fallback to placeholder values
+account_sid = os.getenv('TWILIO_ACCOUNT_SID', 'YOUR_ACCOUNT_SID_HERE')
+auth_token = os.getenv('TWILIO_AUTH_TOKEN', 'YOUR_AUTH_TOKEN_HERE')
+twilio_phone_number = os.getenv('TWILIO_PHONE_NUMBER', 'YOUR_TWILIO_PHONE_HERE')
+emergency_contacts = os.getenv('EMERGENCY_CONTACTS', '+1234567890').split(',')
 
 # Initialize the audio system for alarm notifications
 mixer.init()
 sound = mixer.Sound('alarm.wav')
+
+# Get current location for emergency alerts
+location = geocoder.ip('me')
 
 # Load Haar cascade classifiers for face and eye detection
 # These XML files contain pre-trained models for detecting facial features
@@ -45,6 +60,7 @@ score = 0  # Drowsiness score (increases when eyes are closed)
 thicc = 2  # Thickness for warning rectangle
 rpred = [99]  # Right eye prediction (99 = no detection yet)
 lpred = [99]  # Left eye prediction (99 = no detection yet)
+sms_sent = False  # Flag to prevent multiple SMS alerts
 
 # Main processing loop - runs continuously until 'q' is pressed
 while(True):
@@ -82,12 +98,12 @@ while(True):
         r_eye = np.expand_dims(r_eye, axis=0)  # Add batch dimension
         
         # Use the CNN model to predict eye state (0=closed, 1=open)
-        rpred = np.argmax(model.predict(r_eye, verbose=0), axis=1)
+        rpred = np.argmax(model.predict(r_eye, verbose=0), axis=-1)
         
         # Update label based on prediction
-        if(rpred[0] == 1):
+        if np.all(rpred) == 1:
             lbl = 'Open' 
-        if(rpred[0] == 0):
+        if np.all(rpred) == 0:
             lbl = 'Closed'
         break  # Process only the first detected eye
 
@@ -105,17 +121,17 @@ while(True):
         l_eye = np.expand_dims(l_eye, axis=0)  # Add batch dimension
         
         # Use the CNN model to predict eye state (0=closed, 1=open)
-        lpred = np.argmax(model.predict(l_eye, verbose=0), axis=1)
+        lpred = np.argmax(model.predict(l_eye, verbose=0), axis=-1)
         
         # Update label based on prediction
-        if(lpred[0] == 1):
+        if np.all(lpred) == 1:
             lbl = 'Open'   
-        if(lpred[0] == 0):
+        if np.all(lpred) == 0:
             lbl = 'Closed'
         break  # Process only the first detected eye
 
     # Drowsiness detection logic
-    if(rpred[0] == 0 and lpred[0] == 0):
+    if np.logical_and(np.all(rpred) == 0, np.all(lpred) == 0):
         # Both eyes are closed - increase drowsiness score
         score += 1
         cv2.putText(frame, "Closed", (10, height-20), font, 1, (255, 255, 255), 1, cv2.LINE_AA)
@@ -132,15 +148,40 @@ while(True):
     cv2.putText(frame, 'Score:' + str(score), (100, height-20), font, 1, (255, 255, 255), 1, cv2.LINE_AA)
     
     # Alert system - trigger when drowsiness score exceeds threshold
-    if(score > 15):
-        # Person appears to be drowsy - activate alarm system
-        cv2.imwrite(os.path.join(path, 'image.jpg'), frame)  # Save current frame
-        
+    if(score > 20):
         # Play alarm sound (with error handling)
         try:
             sound.play()
         except:  # Handle cases where sound might not play
             pass
+    
+    # Emergency SMS alert system - trigger when drowsiness score exceeds critical threshold
+    if(score > 40 and not sms_sent):
+        # Critical drowsiness detected - send emergency SMS
+        cv2.imwrite(os.path.join(path, 'image.jpg'), frame)  # Save current frame
+        
+        try:
+            # Initialize Twilio client
+            client = Client(account_sid, auth_token)
+            
+            # Get current location for emergency message
+            current_location = geocoder.ip('me')
+            location_str = f" at {current_location.city}, {current_location.country}" if current_location.city else ""
+            
+            # Send SMS to all emergency contacts
+            for contact in emergency_contacts:
+                message = client.messages.create(
+                    body=f"🚨 EMERGENCY ALERT! Driver appears unconscious{location_str}. Please check immediately!",
+                    from_=twilio_phone_number,
+                    to=contact
+                )
+                print(f"Emergency SMS sent to {contact}. Message SID: {message.sid}")
+            
+            sms_sent = True
+            print("Emergency SMS alerts sent successfully!")
+            
+        except Exception as e:
+            print(f"Failed to send emergency SMS: {str(e)}")
         
         # Create pulsing red border effect for visual alert
         if(thicc < 16):
@@ -151,7 +192,7 @@ while(True):
                 thicc = 2  # Reset to minimum thickness
         
         # Draw red warning rectangle around the entire frame
-        cv2.rectangle(frame, (0, 0), (width, height), (0, 0, 255), thicc) 
+        cv2.rectangle(frame, (0, 0), (width, height), (0, 0, 255), thicc)
     
     # Display the processed frame
     cv2.imshow('Drowsiness Detection System', frame)

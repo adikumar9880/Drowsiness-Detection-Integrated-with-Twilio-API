@@ -7,7 +7,10 @@ A real-time drowsiness detection system that uses computer vision and deep learn
 - **Real-time Eye Detection**: Uses Haar cascade classifiers to detect faces and eyes in real-time
 - **CNN-based Classification**: Employs a trained Convolutional Neural Network to classify eye states (open/closed)
 - **Drowsiness Scoring**: Implements a scoring system that tracks consecutive closed-eye periods
-- **Audio Alerts**: Plays an alarm sound when drowsiness is detected
+- **Multi-level Alert System**: 
+  - Audio alerts when drowsiness is detected
+  - Emergency SMS notifications to contacts
+- **Location Services**: Includes location information in emergency alerts
 - **Visual Feedback**: Provides real-time status display and warning indicators
 - **Easy to Use**: Simple interface with clear instructions
 
@@ -52,6 +55,68 @@ This will install all the required packages:
 - Matplotlib (3.10.7) - Plotting library
 - Pygame (2.6.1) - Audio playback
 - Pillow (11.3.0) - Image processing
+- Twilio (8.10.0) - SMS messaging service
+- Geocoder (1.38.1) - Location services
+
+### Step 4: Configure Twilio (Optional)
+
+If you want to use SMS emergency alerts:
+
+#### Option 1: Environment Variables (Recommended)
+
+**Windows PowerShell:**
+```powershell
+$env:TWILIO_ACCOUNT_SID="your_account_sid_here"
+$env:TWILIO_AUTH_TOKEN="your_auth_token_here"
+$env:TWILIO_PHONE_NUMBER="your_twilio_phone_number"
+$env:EMERGENCY_CONTACTS="+1234567890,+0987654321"
+```
+
+**Windows Command Prompt:**
+```cmd
+set TWILIO_ACCOUNT_SID=your_account_sid_here
+set TWILIO_AUTH_TOKEN=your_auth_token_here
+set TWILIO_PHONE_NUMBER=your_twilio_phone_number
+set EMERGENCY_CONTACTS=+1234567890,+0987654321
+```
+
+**macOS/Linux:**
+```bash
+export TWILIO_ACCOUNT_SID="your_account_sid_here"
+export TWILIO_AUTH_TOKEN="your_auth_token_here"
+export TWILIO_PHONE_NUMBER="your_twilio_phone_number"
+export EMERGENCY_CONTACTS="+1234567890,+0987654321"
+```
+
+#### Option 2: Config File
+
+1. **Copy the example config file:**
+   ```bash
+   cp config_example.py config.py
+   ```
+
+2. **Edit config.py with your Twilio credentials:**
+   ```python
+   TWILIO_ACCOUNT_SID = 'your_actual_account_sid'
+   TWILIO_AUTH_TOKEN = 'your_actual_auth_token'
+   TWILIO_PHONE_NUMBER = 'your_twilio_phone_number'
+   EMERGENCY_CONTACTS = ['+1234567890', '+0987654321']
+   ```
+
+3. **Update the main script to use config file** (modify `drowsiness detection.py`):
+   ```python
+   from config import TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER, EMERGENCY_CONTACTS
+   ```
+
+#### Getting Twilio Credentials
+
+1. **Sign up for Twilio**: Visit [twilio.com](https://www.twilio.com)
+2. **Get your credentials** from the Twilio Console:
+   - Account SID
+   - Auth Token
+   - Phone Number (purchase one if needed)
+3. **Add emergency contacts** in the format: `+1234567890`
+
 
 ## 🎯 Usage
 
@@ -74,7 +139,9 @@ This will install all the required packages:
    - Ensure good lighting for optimal face detection
    - The system will display a live video feed with detection overlays
    - A drowsiness score will be shown at the bottom of the screen
-   - When drowsiness is detected (score > 15), an alarm will sound
+   - **Alert Levels:**
+     - **Score > 20**: Audio alarm plays
+     - **Score > 40**: Emergency SMS sent to contacts (if configured)
    - Press 'q' to quit the application
 
 ### Training a New Model (Optional)
@@ -159,6 +226,9 @@ The CNN model consists of:
 ![Alert System](output/closed1.jpg)
 *Red warning border and alarm activation when drowsiness is detected*
 
+### SMS Emergency Notifications
+![SMS Emergency Alert](output/sms_alert.jpg)
+*SMS notification received on phone showing emergency alert*
 
 ## ⚙️ Configuration
 
