@@ -149,13 +149,16 @@ The CNN model consists of:
 ## 🎨 Screenshots and Outputs
 
 ### System Interface
-*[Add screenshot of the main detection window showing face detection and status display]*
+![System Interface](output/open.jpg)
+*Main detection window showing face detection and status display*
 
 ### Drowsiness Detection in Action
-*[Add screenshot showing the system detecting closed eyes with drowsiness score]*
+![Drowsiness Detection](output/closed.jpg)
+*System detecting closed eyes with drowsiness score*
 
 ### Alert System
-*[Add screenshot showing the red warning border and alarm activation]*
+![Alert System](output/closed1.jpg)
+*Red warning border and alarm activation when drowsiness is detected*
 
 ### Training Progress
 *[Add screenshot of model training progress if you train your own model]*
