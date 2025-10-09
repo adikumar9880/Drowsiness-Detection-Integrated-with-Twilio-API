@@ -213,13 +213,6 @@ Feel free to contribute to this project by:
 - Improving the documentation
 - Optimizing the code
 
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 👥 Authors
-
-- **[Your Name]** - *Initial work* - [Your GitHub](https://github.com/yourusername)
 
 ## 🙏 Acknowledgments
 
@@ -227,13 +220,4 @@ This project is open source and available under the [MIT License](LICENSE).
 - TensorFlow/Keras team for the deep learning framework
 - Contributors to the various Python libraries used in this project
 
-## 📞 Support
 
-If you encounter any issues or have questions, please:
-1. Check the troubleshooting section above
-2. Search for existing issues in the project repository
-3. Create a new issue with detailed information about your problem
-
----
-
-**⚠️ Disclaimer**: This system is for educational and research purposes. While it can help detect drowsiness, it should not be relied upon as the sole safety measure in critical situations like driving. Always prioritize safety and take breaks when feeling tired.
