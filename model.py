@@ -10,8 +10,8 @@ pooling, dropout for regularization, and dense layers for classification.
 Note: This script requires training data in 'data/train' and 'data/valid' directories
 with subdirectories for each class (e.g., 'Open' and 'Closed').
 
-Author: [Your Name]
-Date: [Current Date]
+Author: Aditya Sreekumar Achary
+Date: May 2026
 """
 
 import os

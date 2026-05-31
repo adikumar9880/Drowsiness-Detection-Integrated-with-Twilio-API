@@ -8,8 +8,8 @@ This system captures video from the webcam, detects faces and eyes using Haar ca
 and uses a trained CNN model to classify whether eyes are open or closed.
 When drowsiness is detected (both eyes closed for extended periods), an alarm sounds.
 
-Author: [Your Name]
-Date: [Current Date]
+Author: Aditya Sreekumar Achary
+Date: May 2026
 """
 
 import cv2
@@ -43,9 +43,6 @@ location = geocoder.ip('me')
 face = cv2.CascadeClassifier('haar cascade files/haarcascade_frontalface_alt.xml')
 leye = cv2.CascadeClassifier('haar cascade files/haarcascade_lefteye_2splits.xml')
 reye = cv2.CascadeClassifier('haar cascade files/haarcascade_righteye_2splits.xml')
-
-# Labels for eye state classification (0 = Closed, 1 = Open)
-lbl = ['Close', 'Open']
 
 # Load the pre-trained CNN model for eye state classification
 # This model was trained to distinguish between open and closed eyes
@@ -100,11 +97,6 @@ while(True):
         # Use the CNN model to predict eye state (0=closed, 1=open)
         rpred = np.argmax(model.predict(r_eye, verbose=0), axis=-1)
         
-        # Update label based on prediction
-        if np.all(rpred) == 1:
-            lbl = 'Open' 
-        if np.all(rpred) == 0:
-            lbl = 'Closed'
         break  # Process only the first detected eye
 
     # Process left eye detection and classification (same as right eye)
@@ -123,11 +115,6 @@ while(True):
         # Use the CNN model to predict eye state (0=closed, 1=open)
         lpred = np.argmax(model.predict(l_eye, verbose=0), axis=-1)
         
-        # Update label based on prediction
-        if np.all(lpred) == 1:
-            lbl = 'Open'   
-        if np.all(lpred) == 0:
-            lbl = 'Closed'
         break  # Process only the first detected eye
 
     # Drowsiness detection logic
@@ -182,16 +169,15 @@ while(True):
             
         except Exception as e:
             print(f"Failed to send emergency SMS: {str(e)}")
-        
-        # Create pulsing red border effect for visual alert
+
+    # Pulsing red border runs independently of SMS so it stays active after alert is sent
+    if(score > 40):
         if(thicc < 16):
-            thicc += 2  # Increase border thickness
+            thicc += 2
         else:
-            thicc -= 2  # Decrease border thickness
+            thicc -= 2
             if(thicc < 2):
-                thicc = 2  # Reset to minimum thickness
-        
-        # Draw red warning rectangle around the entire frame
+                thicc = 2
         cv2.rectangle(frame, (0, 0), (width, height), (0, 0, 255), thicc)
     
     # Display the processed frame
